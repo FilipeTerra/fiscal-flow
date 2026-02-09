@@ -1,0 +1,45 @@
+import type { XmlProcessResponse, SolicitacaoBody, SolicitacaoResponse, SolicitacaoDetailResponse } from '@/types/fiscal';
+
+const API_BASE = '/api';
+
+export async function processarXml(file: File): Promise<XmlProcessResponse> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const response = await fetch(`${API_BASE}/NotasFiscais/processar-xml`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao processar XML: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function enviarSolicitacao(body: SolicitacaoBody): Promise<SolicitacaoResponse> {
+  const response = await fetch(`${API_BASE}/SolicitacaoProcessoFiscal`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao enviar solicitação: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export async function consultarSolicitacao(id: number): Promise<SolicitacaoDetailResponse> {
+  const response = await fetch(`${API_BASE}/SolicitacaoProcessoFiscal/${id}`, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Erro ao consultar solicitação: ${response.statusText}`);
+  }
+
+  return response.json();
+}
